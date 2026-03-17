@@ -2,7 +2,8 @@
     // ==========================
     // CONFIGURAÇÃO
     // ==========================
-    const chatUrl = "https://copilotstudio.microsoft.com/environments/adf5ac63-1957-eee0-afc2-9e64db5c7cea/bots/cr6ae_botTest/webchat?__version__=2"; // <-- substitua pela URL correta do seu bot
+    //const chatUrl = "https://copilotstudio.microsoft.com/environments/adf5ac63-1957-eee0-afc2-9e64db5c7cea/bots/cr6ae_botTest/webchat?__version__=2"; // <-- substitua pela URL correta do seu bot
+     const chatUrl = "https://zelucaspp.github.io/ChatSMA/SMA_AssistenteVirtual_Index.html";
 
     // ==========================
     // ESTILOS DO BOTÃO E CHAT
