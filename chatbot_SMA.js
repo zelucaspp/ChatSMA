@@ -50,7 +50,7 @@
             position: fixed;
             bottom: 80px;
             right: 20px;
-            width: min(400px, 90vw);
+            width: min(500px, 90vw);
             height: min(1000px, 80vh);
             border: 2px solid #ccc;
             border-radius: 10px;
