@@ -1,851 +1,699 @@
-
-
 <!DOCTYPE html>
 <html lang="pt">
 
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="SMA Visual Assistant" />
     <title>SMA Visual Assistant Test</title>
     <script src="https://cdn.botframework.com/botframework-webchat/latest/webchat.js"></script>
-    <script>
-	
-	
-	//tamanho da tela do chat
-	const styleSet = window.WebChat.createStyleSet({
-         rootHeight: '100%',
-         rootWidth: '50%',
-         backgroundColor: 'paleturquoise',
-		 bubbleBackground: 'rgba(0, 0, 255, .1)',
-      });
-/*	
-//avatar	
-   const avatarOptions = {
-   botAvatarImage: '<URL to your bot avatar image>',
-   botAvatarInitials: 'BF',
-   userAvatarImage: 'Você',
-   userAvatarInitials: 'WC'
-};
-*/
-	  hatInstance = null;
-      let directLineUrl = null;
-
-      // Replace with your token endpoint
-      const tokenEndpoint = 'https://adf5ac631957eee0afc29e64db5c7c.ea.environment.api.powerplatform.com/powervirtualagents/botsbyschema/cr6ae_botTest/directline/token?api-version=2022-03-01-preview';
-      const styleOptions = {
-        "accent": "#0078D4",
-        "fontSizeSmall":"12px",
-        "fontSizeMedium":"13px",
-        "fontSizeLarge":"5px",
-        "autoScrollSnapOnPage": true,
-        "autoScrollSnapOnPageOffset": 0,
-        "avatarBorderRadius": "7%",
-        "avatarSize": 31,
-        "backgroundColor": "#e8e9eb",
-        "botAvatarBackgroundColor": "#ffffff00",
-        "botAvatarImage": "https://powercatexternal.blob.core.windows.net/creatorkit/Assets/ChatbotLogoBlue.png",
-        "botAvatarInitials": "B",
-        "bubbleAttachmentMaxWidth": 480,
-        "bubbleAttachmentMinWidth": 250,
-        "bubbleBackground": "#f0eded",
-        "bubbleBorderColor": "#f5f5f5",
-        "bubbleBorderRadius": 18,
-        "bubbleBorderStyle": "solid",
-        "bubbleBorderWidth": 1,
-        "bubbleFromUserBackground": "#ebefff",
-        "bubbleFromUserBorderColor": "#f5f5f5",
-        "bubbleFromUserBorderRadius": 18,
-        "bubbleFromUserBorderStyle": "solid",
-        "bubbleFromUserBorderWidth": 1,
-        "bubbleFromUserNubOffset": 0,
-        "bubbleFromUserNubSize": 0,
-        "bubbleFromUserTextColor": "#242424",
-        "bubbleImageHeight": 10,
-        "bubbleImageMaxHeight": 240,
-        "bubbleImageMinHeight": 240,
-        "bubbleMessageMaxWidth": 480,
-        "bubbleMessageMinWidth": 120,
-        "bubbleMinHeight": 50,
-        "bubbleNubOffset": 0,
-        "bubbleTextColor": "#242424",
-        "emojiSet": true,
-        "fontSizeSmall": "70%",
-        "hideUploadButton": true,//para habilitar o icone anexo coloque false
-        "messageActivityWordBreak": "break-word",
-        "monospaceFont": "Consolas",
-        "paddingRegular": 10,
-        "paddingWide": 10,
-        "primaryFont": null,
-        "sendBoxBackground": "#e8e9eb",
-        "sendBoxBorderTop": "solid 1px #808080",
-        "sendBoxButtonColor": "#0078d4",
-        "sendBoxButtonColorOnHover": "#006cbe",
-        "sendBoxButtonShadeBorderRadius": 10,//////////////////
-        "sendBoxButtonShadeColorOnHover": "",
-        //"sendBoxHeight": 60,//60ALTURA DA CAIXA DE MENSAGEM
-		"sendBoxTextWrap": true,
-		//"sendBoxMaxHeight": 120,
-        "sendBoxPlaceholderColor": "#171616",
-        "sendBoxTextColor": "#2e2d2d",
-        "showAvatarInGroup": "status",
-        "spinnerAnimationHeight": 16,
-        "spinnerAnimationPadding": 12,
-        "spinnerAnimationWidth": 16,
-        "subtleColor": "#000000FF",
-        "suggestedActionBackgroundColor": "#006FC4FF",
-        "suggestedActionBackgroundColorOnHover": "#0078D4",
-        "suggestedActionBorderColor": "",
-        "suggestedActionBorderRadius": 25,
-        "suggestedActionBorderWidth": 1,
-        "suggestedActionLayout": "flow",
-        "suggestedActionTextColor": "#FFFFFFFF",
-        //"typingAnimationBackgroundImage": "url(blendertimer-load-32_128.gif)",//"url('https://wpamelia.com/wp-content/uploads/2018/11/ezgif-2-6d0b072c3d3f.gif')",
-        //"typingAnimationDuration": 2000,
-        //"typingAnimationHeight": 32,
-        //"typingAnimationWidth": 32,
-        "userAvatarBackgroundColor": "#5AA9F4",
-		    "avatarBorderRadius": "50%",
-		    "avatarSize": 30,
-        "userAvatarImage":"Avatar_user.svg", //"https://avatars.githubusercontent.com/u/8174072?v=4&size=64", imagem do avatar do usuário
-        "userAvatarInitials": ""
-      };
-      const backgroundImage = "";
-
-      document.addEventListener('DOMContentLoaded', () => {
-        const root = document.documentElement;
-        root.style.setProperty('--primary-color', createGradient(styleOptions.accent));
-        root.style.setProperty('--header-textColor', styleOptions.suggestedActionTextColor);
-
-        if (backgroundImage) {
-          const webchatElement = document.getElementById('webchat');
-          webchatElement.style.backgroundImage = `url(${backgroundImage})`;
-          webchatElement.style.backgroundSize = 'cover';
-          webchatElement.style.backgroundPosition = 'center';
-          webchatElement.style.backgroundRepeat = 'no-repeat';
-
-          const overlay = document.createElement('div');
-          overlay.className = 'webchat-overlay';
-          webchatElement.appendChild(overlay);
+    <style>
+        :root {
+            --primary-gradient: var(--primary-color);
+            --chat-width: 450px;
+            --chat-height: 520px;
+            --header-height: 56px;
+            --border-radius: 16px;
+            --transition-speed: 0.3s;
         }
-      });
-
-      function createGradient(baseColor) {
-        const r = parseInt(baseColor.slice(1, 3), 16);
-        const g = parseInt(baseColor.slice(3, 5), 16);
-        const b = parseInt(baseColor.slice(5, 7), 16);
-        const lighterColor = `#${Math.min(255, r + 30).toString(16).padStart(2, '0')}${Math.min(255, g + 30).toString(16).padStart(2, '0')}${Math.min(255, b + 30).toString(16).padStart(2, '0')}`;
-        const darkerColor = `#${Math.max(0, r - 30).toString(16).padStart(2, '0')}${Math.max(0, g - 30).toString(16).padStart(2, '0')}${Math.max(0, b - 30).toString(16).padStart(2, '0')}`;
-        return `linear-gradient(135deg, ${lighterColor}, ${baseColor}, ${darkerColor})`;
-      }
-
-      const environmentEndPoint = tokenEndpoint.slice(
-        0,
-        tokenEndpoint.indexOf("/powervirtualagents")
-      );
-      const apiVersion = tokenEndpoint
-        .slice(tokenEndpoint.indexOf("api-version"))
-        .split("=")[1];
-      const regionalChannelSettingsURL = `${environmentEndPoint}/powervirtualagents/regionalchannelsettings?api-version=${apiVersion}`;
-/*Botão flutuante
-      function showChat() {
-        const popup = document.getElementById("chatbot-popup");
-        const openButton = document.getElementById("open-chat");
-        popup.classList.add("visible");
-        openButton.classList.add("hidden");
-      }
-
-
-      function hideChat() {
-        const popup = document.getElementById("chatbot-popup");
-        const openButton = document.getElementById("open-chat");
-        popup.classList.remove("visible");
-        openButton.classList.remove("hidden");
-      }
-        */
-        function createCustomStore() {
-  return window.WebChat.createStore(
-    {},
-    ({ dispatch }) => next => action => {
-
-      // inicia conversa (seu código original)
-      if (action.type === "DIRECT_LINE/CONNECT_FULFILLED") {
-        dispatch({
-          type: "DIRECT_LINE/POST_ACTIVITY",
-          meta: { method: "keyboard" },
-          payload: {
-            activity: {
-              channelData: { postBack: true },
-              name: "startConversation",
-              type: "event",
-            },
-          },
-        });
-      }
-
-      // quando usuário envia mensagem
-      if (action.type === "DIRECT_LINE/POST_ACTIVITY") {
-        setTimeout(() => {
-
-          const transcript = document.querySelector(".webchat__basic-transcript");
-
-          if (transcript && !document.getElementById("typingLoader")) {
-
-            const loader = document.createElement("div");
-            loader.id = "typingLoader";
-            loader.className = "webchat__typing-indicator";
-            loader.innerHTML = "<span></span><span></span><span></span>";
-
-            transcript.appendChild(loader);
-          }
-
-        }, 200);
-      }
-
-      // quando bot responde remove loader
-      if (action.type === "DIRECT_LINE/INCOMING_ACTIVITY") {
-
-        if (action.payload.activity.from.role === "bot") {
-
-          const loader = document.getElementById("typingLoader");
-
-          if (loader) loader.remove();
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
-      }
-
-      return next(action);
-    }
-  );
-}
-
-      async function restartConversation() {
-        try {
-          if (!directLineUrl) {
-            console.error("DirectLine URL not initialized");
-            return;
-          }
-
-          const response = await fetch(tokenEndpoint);
-          const conversationInfo = await response.json();
-
-          if (!conversationInfo.token) {
-            throw new Error("Failed to get conversation token");
-          }
-
-          const newDirectLine = window.WebChat.createDirectLine({
-            domain: `${directLineUrl}v3/directline`,
-            token: conversationInfo.token,
-          });
-
-          const webchatElement = document.getElementById("webchat");
-          
-          webChatInstance = window.WebChat.renderWebChat(
-          {
-            directLine,
-            styleOptions,
-            store: createCustomStore(),
-            activityMiddleware
-          },
-          document.getElementById("webchat")
-          );
-          
-
-          const activityMiddleware = () => next => card => {
-          if (card.activity.type === 'typing') {
-            return () => {
-              const typing = document.createElement('div');
-              typing.className = 'webchat__typing-indicator';
-              typing.innerHTML = '<span></span><span></span><span></span>';
-              return typing;
-            };
-          }
-
-          return next(card);
-        };
-
-
-          
-          webChatInstance = window.WebChat.renderWebChat(
-            {
-              directLine: newDirectLine,
-              styleOptions,
-              store: createCustomStore(),
-              activityMiddleware
-            },
-            webchatElement
-          );
-          
-        } catch (err) {
-          console.error("Failed to restart conversation:", err);
+        body {
+            min-height: 100vh;
+            background-color: #f3f4f6;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f5f6fa;
         }
-      }
-
-      const activityMiddleware = () => next => card => {
-
-      if (card.activity.type === "typing") {
-        return () => {
-          const typing = document.createElement("div");
-          typing.className = "webchat__typing-indicator";
-          typing.innerHTML = "<span></span><span></span><span></span>";
-          return typing;
-        };
-      }
-
-      return next(card);
-      };
-
-
-      async function initializeChat() {
-        try {
-          const response = await fetch(regionalChannelSettingsURL);
-          const data = await response.json();
-          directLineUrl = data.channelUrlsById.directline;
-
-          if (!directLineUrl) {
-            throw new Error("Failed to get DirectLine URL");
-          }
-
-          const conversationResponse = await fetch(tokenEndpoint);
-          const conversationInfo = await conversationResponse.json();
-
-          if (!conversationInfo.token) {
-            throw new Error("Failed to get conversation token");
-          }
-
-          const directLine = window.WebChat.createDirectLine({
-            domain: `${directLineUrl}v3/directline`,
-            token: conversationInfo.token,
-          });
-
-          webChatInstance = window.WebChat.renderWebChat(
-            {
-              directLine,
-              styleOptions,
-              store: createCustomStore(),
-              activityMiddleware
-            },
-            document.getElementById("webchat")
-          );
-        } catch (err) {
-          console.error("Failed to initialize chat:", err);
+        #chatbot-popup {
+            display: none;
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            width: var(--chat-width);
+            height: var(--chat-height);
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 18px 40px -5px rgba(0, 0, 0, 0.2), 0 15px 20px -5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            opacity: 0;
+            transform-origin: bottom right;
+            transform: scale(0.95);
+            transition: all var(--transition-speed) ease-in-out;
+            z-index: 999;
         }
-      }
+        #chatbot-popup.visible {
+            display: block;
+            opacity: 1;
+            transform: scale(1);
+        }
+        #chatbot-header {
+            background: var(--primary-color);
+            padding: 16px 20px;
+            height: var(--header-height);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--header-textColor);
+        }
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 18px;
+            font-weight: 500;
+        }
+        .header-buttons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .icon-button {
+            background: none;
+            border: none;
+            color: var(--header-textColor);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        .icon-button:hover {
+            color: var(--header-textColor);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .icon-button:focus {
+            outline: 2px solid rgba(255, 255, 255, 0.5);
+            outline-offset: 2px;
+        }
+        #webchat {
+            height: calc(100% - var(--header-height));
+            background-color: #f9fafb;
+            position: relative;
+        }
+        .webchat-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.85);
+            pointer-events: none;
+            z-index: 1;
+        }
+        #webchat > div {
+            position: relative;
+            z-index: 2;
+        }
+        #webchat .webchat__basic-transcript__content {
+            white-space: pre-wrap !important;
+            word-break: break-word !important;
+        }
+        #webchat .webchat__bubble__content {
+            /*padding: 2px 8px !important;*/
+            margin: 2px 0 !important;
+        }
+        #webchat .ac-vertical-content {
+        gap: 2px !important;
+        }
 
-      initializeChat();
-  </script>
-  <style>
-    :root {
-      --primary-gradient: var(--primary-color);
-      --chat-width: 450px;
-      --chat-height: 520px;
-      --header-height: 56px;
-      --border-radius: 16px;
-      --transition-speed: 0.3s;
-    }
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-        Roboto, sans-serif;
-    }
-    body {
-      min-height: 100vh;
-      background-color: #f3f4f6;
-    }
-    #chatbot-popup {
-      display: none;
-      position: fixed;
-      bottom: 32px;
-      right: 32px;
-      width: var(--chat-width);
-      height: var(--chat-height);
-      background: white;
-      border-radius: var(--border-radius);
-      box-shadow: 0 18px 40px -5px rgba(0, 0, 0, 0.2),
-        0 15px 20px -5px rgba(0, 0, 0, 0.1);
-      overflow: hidden;
-      opacity: 0;
-      transform-origin: bottom right;
-      transform: scale(0.95);
-      transition: all var(--transition-speed) ease-in-out;
-      z-index: 999;
-    }
-    #chatbot-popup.visible {
-      display: block;
-      opacity: 1;
-      transform: scale(1);
-    }
-    #chatbot-header {
-      background: var(--primary-color);
-      padding: 16px 20px;
-      height: var(--header-height);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      color: var(--header-textColor);
-    }
-    .header-title {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 18px;
-      font-weight: 500;
-    }
-    .header-buttons {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-    }
-    .icon-button {
-      background: none;
-      border: none;
-      color: var(--header-textColor);
-      cursor: pointer;
-      padding: 8px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s ease;
-    }
-    .icon-button:hover {
-      color: var(--header-textColor);
-      background: rgba(255, 255, 255, 0.1);
-    }
-    .icon-button:focus {
-      outline: 2px solid rgba(255, 255, 255, 0.5);
-      outline-offset: 2px;
-    }
-    #webchat {
-      height: calc(100% - var(--header-height));
-      background-color: #f9fafb;
-      position: relative;
-  
-      /*font-size: 13px !important;*/
-    }
-    .webchat-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(255, 255, 255, 0.85);
-      pointer-events: none;
-      z-index: 1;
-    }
-    #webchat > div {
-      position: relative;
-      z-index: 2;
-    }
-    #webchat .webchat__basic-transcript__content {
-      white-space: pre-wrap !important;
-      word-break: break-word !important;
-    }
-    #webchat .webchat__bubble__content {
-      padding: 8px 10px !important;
-     
-    }
-  
+        #webchat .webchat__bubble--from-bot {
+            text-align: left !important;
+            width: 85% !important;
+            max-width: 85% !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+        }
+      #webchat .webchat__stacked-layout__message {
+         /* width: auto !important;*/
+          display: flex !important;
+      /*justify-content: center !important;*/
+        }
+/*configurações dos balões SIM e NÃO*/
+    #webchat .webchat__suggested-actions__button {
+    padding: 2px 10px !important;   /* diminui altura/largura */
+    font-size: 11px !important;     /* texto menor */
+    border-radius: 10px !important;
 
-/* Opcional: centralizar o texto dentro da bolha */
-#webchat .webchat__bubble--from-bot {
-  text-align: center !important;
-}
+    min-height: unset !important;   /*  remove altura mínima */
+    height: auto !important;
 
-#typingLoader {
-  background: #f0eded;
-  border-radius: 18px;
-  padding: 10px 16px;
-  margin: 8px;
-  display: inline-flex;
-  align-items: center;
-}
-
-    /*TAMANHO DA FONTE- RESPOSTA DO CHATBOAT*/
-  #webchat .webchat__bubble__content * {
-  font-size: 15px !important;
-  line-height: 1.4 !important;
+    display: inline-flex !important;
+    align-items: center !important;
   }
-    .webchat__bubble--from-bot .webchat__bubble__content {
-    font-size: 9px !important;
-    }
-    #webchat .webchat__bubble {
-      max-width: 85% !important;
-      margin: 8px !important;
-    }
-    #webchat .webchat__basic-transcript__content ul,
-    #webchat .webchat__basic-transcript__content ol,
-    #webchat .webchat__bubble__content ul,
-    #webchat .webchat__bubble__content ol {
-      padding-left: 24px !important;
-      margin: 8px 0 !important;
-      list-style-position: outside !important;
-    }
-    #webchat .webchat__basic-transcript__content li,
-    #webchat .webchat__bubble__content li {
-      margin: 4px 0 !important;
-      padding-left: 4px !important;
-    }
-/* BOTÕES DE OPÇÕES DO CHAT */
-#webchat .webchat__suggested-actions__action button {
-  border: 2px solid #0078D4 !important;   /* cor da borda */
-  border-radius: 20px !important;         /* arredondado */
-  background-color: #ffffff !important;   /* fundo */
-  color: #0078D4 !important;              /* cor do texto */
-  padding: 8px 18px !important;
-  font-size: 14px !important;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-/* HOVER */
-#webchat .webchat__suggested-actions__action button:hover {
-  background-color: #0078D4 !important;
-  color: #ffffff !important;
-}
 
 
+        
+        #typingLoader {
+            background: #f0eded;
+            border-radius: 18px;
+            padding: 10px 16px;
+            margin: 8px;
+            display: inline-flex;
+            align-items: center;
+        }
+                /* Diminuir espaçamento interno das bolhas */
+        #webchat .webchat__bubble__content * {
+            font-size: 13px !important; /*tamanho da fonte*/
+            line-height: 1.1 !important;
+    
+        
+        }
 
-    /*
-    #open-chat {
-      position: fixed;
-      bottom: 32px;
-      right: 32px;
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
-      background: var(--primary-gradient);
-      border: none;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-      transition: all var(--transition-speed) ease-in-out;
-      z-index: 998;
-    }
-    #open-chat.hidden {
-      opacity: 0;
-      transform: scale(0.95) translateY(10px);
-      pointer-events: none;
-    }
-    #open-chat:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    }
-    #open-chat:focus {
-      outline: 3px solid rgba(79, 70, 229, 0.5);
-      outline-offset: 2px;
-    }
-    #open-chat svg {
-      width: 28px;
-      height: 28px;
-      color: white;
-      transition: transform 0.2s ease;
-    }
-      */
-
-  /*.chat-header{
-  height:64px;
-  background:#0078D4;
-  color:white;
-  display:flex;
-  align-items:center;
-  padding:0 16px;
-  font-weight:600;
-  font-size:16px;
-}*/
-
-    .main-content {
-      /*max-width: 1200px;*/
-      width: 100%;
-      height: 100dvh;
-      margin: 0 auto;
-      padding: 0px 0px;
-      background-image: url("AneelBackground.png"); /*IMAGEM DE FUNDO*/
-      /*background-image: url("aneelBackgroud.jpeg");*/
-      background-size: cover;
-      background-position: center;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .main-content h1 {
-      font-size: 36px;
-      color: #111827;
-      text-align: center;
-    }
-    .main-content p {
-      font-size: 18px;
-      color: #4b5563;
-      line-height: 1.6;
-      margin-bottom: 48px;
-      text-align: center;
-      max-width: 800px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    .content-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 32px;
-      margin-bottom: 32px;
-    }
-    .content-box {
-      background: linear-gradient(135deg, #e6e6e6, #c4c4c4, #9f9f9f);
-      padding: 32px;
-      border-radius: 12px;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-                  0 2px 4px -1px rgba(0, 0, 0, 0.06);
-      min-height: 300px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-    .content-box::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-    }
-    .content-box.featured {
-      grid-column: span 2;
-      min-height: 350px;
-      background: linear-gradient(135deg, #e6e6e6, #c4c4c4, #9f9f9f);
-      color: #000000;
-    }
-    .content-box h2 {
-      font-size: 24px;
-      margin-bottom: 16px;
-      position: relative;
-    }
-    .content-box p {
-      font-size: 16px;
-      color: #6b7280;
-      margin-bottom: 0;
-    }
-    .content-box.featured p {
-      color: #000000;
-    }
-    @media (max-width: 768px) {
-      .content-grid {
-        grid-template-columns: 1fr;
+        .webchat__bubble--from-bot .webchat__bubble__content {
+            font-size: 9px !important;
+        }
+        #webchat .webchat__bubble {
+            max-width: 85% !important;
+            margin: 8px !important;
+            
+        
+          }
+     #webchat .ac-textBlock {
+        display: block !important;   
+        margin: 0 !important;
+        padding: 0 !important;
+        line-height: 1.2 !important;
+        text-align: left !important;
       }
-      .content-box.featured {
-        grid-column: span 1;
+      #webchat .webchat__render-markdown p {
+      text-align: left !important;
+      margin: 8px 0 !important;   /* diminui espaço */
+      line-height: 1.1 !important;
+      } 
+      /*ESPAÇO ENTRE TEXTO*/
+      #webchat .ac-textBlock + .ac-textBlock {
+        margin-top: 4px !important;
       }
-      .main-content {
-        padding: 24px 16px;
-      }
-      .main-content h1 {
-        font-size: 28px;
-      }
-      #chatbot-popup {
-        width: 100%;
-        height: 100%;
-        bottom: 0;
-        right: 0;
-        border-radius: 0;
-      }
+      #webchat .ac-adaptiveCard {
+      width: 100% !important;
     }
-.webchat__send-box-text-box__input {
-    max-height: 120px;
-    overflow-y: hidden;
-    line-height: 1.4;
-}
-  #webchat .webchat__send-box-text-box {
-  min-height: 60px !important;
-  max-height: 90px !important;
-  overflow-y: auto !important;
-  resize: none !important;
-  white-space: pre-wrap !important;
-  word-break: break-word !important;
-  line-height: 1.4 !important;
-  padding: 10px !important;
-  box-sizing: border-box !important;
-  align-items: flex-start !important;
-}
-
-#webchat .webchat__send-box {
-  overflow: hidden !important;
-}
-	#webchat .webchat__send-box-text-box::-webkit-scrollbar {
-	  width: 6px;
-	}
-
-	#webchat .webchat__send-box-text-box::-webkit-scrollbar-thumb {
-	  background: #bdbdbd;
-	  border-radius: 4px;
-	}
- .chat-icon {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-}
-body {
-  margin: 0;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #f5f6fa;
-}
-
-#chat-container{
-  width: 580px;/*Largura da tela do chat*/
-  height: 95%;
-  border-radius: 14px;
-  overflow: hidden;
-  background: white;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-}
-/* BOTÕES DO ADAPTIVE CARD */
-#webchat .ac-pushButton {
-  color: #ffffff !important;          /* cor do texto */
-  background-color: #b7c3cd !important; /* fundo do botão */
-  border: 2px solid #b7c3cd !important; /* cor da borda */
-  border-radius: 20px !important;     /* arredondar borda */
-  padding: 10px 16px !important;
-  font-size: 14px !important;
-}
-
-/* HOVER */
-#webchat .ac-pushButton:hover {
-  background-color: #b7c3cd !important;
-  border-color: #b7c3cd !important;
-}
-/*cor botão quando selecionado*/
-.ac-selectable:focus {
-  filter: sepia(1) saturate(5) hue-rotate(175deg);
-}
-  /*Cor da estrela quando selecionada*/
-img.ac-image.ac-selectable:focus {
-  filter: sepia(1) saturate(5) hue-rotate(10deg);
-}
-/*esconde o icone X */
-#close-button {
-  display: none !important;
-}
-
-/*#######################*/
-/* LOADING BOT (3 pontinhos) */
-.webchat__typing-indicator {
-  display: flex;
-  align-items: center;
-  padding: 10px 14px;
-}
-
-.webchat__typing-indicator span {
-  height: 8px;
-  width: 8px;
-  margin: 0 2px;
-  background-color: #9aa0a6;
-  border-radius: 50%;
-  display: inline-block;
-  animation: typingDots 1.4s infinite ease-in-out;
-}
-
-.webchat__typing-indicator span:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-.webchat__typing-indicator span:nth-child(3) {
-  animation-delay: 0.4s;
-}
-
-@keyframes typingDots {
-  0%, 80%, 100% {
-    transform: scale(0);
-    opacity: 0.3;
-  }
-  40% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-/*#######################*/
 
 
 
-
-  </style>
+        #webchat .webchat__basic-transcript__content ul,
+        #webchat .webchat__basic-transcript__content ol,
+        #webchat .webchat__bubble__content ul,
+        #webchat .webchat__bubble__content ol {
+            padding-left: 24px !important;
+            margin: 8px 0 !important;
+            list-style-position: outside !important;
+        }
+        #webchat .webchat__basic-transcript__content li,
+        #webchat .webchat__bubble__content li {
+            margin: 4px 0 !important;
+            padding-left: 4px !important;
+        }
+        #webchat .webchat__suggested-actions__action button {
+            border: 2px solid #0078D4 !important;
+            border-radius: 10px !important;
+            background-color: #ffffff !important;
+            color: #0078D4 !important;
+            padding: 2px 10px !important;
+            font-size: 12px !important;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        #webchat .webchat__suggested-actions__action button:hover {
+            background-color: #0078D4 !important;
+            color: #ffffff !important;
+        }
+        .main-content {
+            width: 100%;
+            height: 100dvh;
+            margin: 0 auto;
+            padding: 0px 0px;
+            background-image: url("AneelBackground.png");
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .main-content h1 {
+            font-size: 36px;
+            color: #111827;
+            text-align: center;
+        }
+        .main-content p {
+            font-size: 18px;
+            color: #4b5563;
+            line-height: 1.6;
+            margin-bottom: 48px;
+            text-align: center;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 32px;
+            margin-bottom: 32px;
+        }
+        .content-box {
+            background: linear-gradient(135deg, #e6e6e6, #c4c4c4, #9f9f9f);
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .content-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+        .content-box.featured {
+            grid-column: span 2;
+            min-height: 350px;
+            background: linear-gradient(135deg, #e6e6e6, #c4c4c4, #9f9f9f);
+            color: #000000;
+        }
+        .content-box h2 {
+            font-size: 24px;
+            margin-bottom: 16px;
+            position: relative;
+        }
+        .content-box p {
+            font-size: 16px;
+            color: #6b7280;
+            margin-bottom: 0;
+        }
+        .content-box.featured p {
+            color: #000000;
+        }
+        @media (max-width: 768px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            .content-box.featured {
+                grid-column: span 1;
+            }
+            .main-content {
+                padding: 24px 16px;
+            }
+            .main-content h1 {
+                font-size: 28px;
+            }
+            #chatbot-popup {
+                width: 100%;
+                height: 100%;
+                bottom: 0;
+                right: 0;
+                border-radius: 0;
+            }
+        }
+        .webchat__send-box-text-box__input {
+            max-height: 120px;
+            overflow-y: hidden;
+            line-height: 1.4;
+        }
+        #webchat .webchat__send-box-text-box {
+            min-height: 60px !important;
+            max-height: 90px !important;
+            overflow-y: auto !important;
+            resize: none !important;
+            white-space: pre-wrap !important;
+            word-break: break-word !important;
+            line-height: 1.4 !important;
+            padding: 10px !important;
+            box-sizing: border-box !important;
+            align-items: flex-start !important;
+            font-size: 12px !important; /*Tamanho da fonte aonde o usuário digita a mensagem*/
+        }
+        #webchat .webchat__send-box {
+            overflow: hidden !important;
+        }
+        #webchat .webchat__send-box-text-box::-webkit-scrollbar {
+            width: 6px;
+        }
+        #webchat .webchat__send-box-text-box::-webkit-scrollbar-thumb {
+            background: #bdbdbd;
+            border-radius: 4px;
+        }
+        .chat-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+        }
+        #chat-container {
+            width: 580px;
+            height: 95%;
+            border-radius: 14px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+        #webchat .ac-pushButton {
+            color: #ffffff !important;
+            background-color: #b7c3cd !important;
+            border: 2px solid #b7c3cd !important;
+            border-radius: 20px !important;
+            padding: 2px 8px !important;
+            font-size: 8px !important;
+            line-height: 1.2 !important;
+            min-height: unset !important;
+            height: auto !important;
+            display: inline-flex !important;
+            align-items: center !important;
+        }
+        #webchat .ac-pushButton:hover {
+            background-color: #b7c3cd !important;
+            border-color: #b7c3cd !important;
+        }
+        .ac-selectable:focus {
+            filter: sepia(1) saturate(5) hue-rotate(175deg);
+        }
+        img.ac-image.ac-selectable:focus {
+            filter: sepia(1) saturate(5) hue-rotate(10deg);
+        }
+        #close-button {
+            display: none !important;
+        }
+        .webchat__typing-indicator {
+            display: flex;
+            align-items: center;
+            padding: 10px 14px;
+        }
+        .webchat__typing-indicator span {
+            height: 8px;
+            width: 8px;
+            margin: 0 2px;
+            background-color: #9aa0a6;
+            border-radius: 50%;
+            display: inline-block;
+            animation: typingDots 1.4s infinite ease-in-out;
+        }
+        .webchat__typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        .webchat__typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        @keyframes typingDots {
+            0%, 80%, 100% {
+                transform: scale(0);
+                opacity: 0.3;
+            }
+            40% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+    </style>
 </head>
+
 <body>
-  
-  
-  <div class="main-content"> 
-  
-    <div id="chat-container">
-    <div id="chatbot-header"> 
-	  <div class="header-title">
-		<img src="ImageChat.png" class="chat-icon" alt="Logo Assistente">
- 
-		  <path
-            d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
-          ></path>
-        </svg>
-        <span class = "chat-title" >Assistente virtual ANEEL</span>
-      </div>
-	 
-      <div class="header-buttons">
-        <button
-          class="icon-button"
-          id="restart-button"
-          onclick="restartConversation()"
-          aria-label="Restart Conversation"
-        >
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-          >
-            <path
-              d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"
-            ></path>
-            <path d="M3 3v5h5"></path>
-          </svg>
-        </button>
-        <button
-          class="icon-button"
-          id="close-button"
-          onclick="hideChat()"
-          aria-label="Close Chat"
-        >
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-          >
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
-      </div>
+    <div class="main-content">
+        <div id="chat-container">
+            <div id="chatbot-header">
+                <div class="header-title">
+                    <img src="ImageChat.png" class="chat-icon" alt="Logo Assistente">
+                    <span class="chat-title">Assistente virtual ANEEL</span>
+                </div>
+                <div class="header-buttons">
+                    <button class="icon-button" id="restart-button" aria-label="Restart Conversation">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                            <path d="M3 3v5h5"></path>
+                        </svg>
+                    </button>
+                    <button class="icon-button" id="close-button" aria-label="Close Chat">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div id="webchat" role="main"></div>
+        </div>
     </div>
-    <div id="webchat" role="main"></div>
-  </div>
 
+    <script>
+        // Configurações do chat
+        const tokenEndpoint = 'https://adf5ac631957eee0afc29e64db5c7c.ea.environment.api.powerplatform.com/powervirtualagents/botsbyschema/cr6ae_botTest/directline/token?api-version=2022-03-01-preview';
+        
+        const styleOptions = {
+            "accent": "#0078D4",
+            "fontSizeSmall": "12px",
+            "fontSizeMedium": "13px",
+            "fontSizeLarge": "5px",
+            "autoScrollSnapOnPage": true,
+            "autoScrollSnapOnPageOffset": 0,
+            "avatarBorderRadius": "7%",
+            "avatarSize": 31,
+            "backgroundColor": "#e8e9eb",
+            "botAvatarBackgroundColor": "#ffffff00",
+            "botAvatarImage": "https://powercatexternal.blob.core.windows.net/creatorkit/Assets/ChatbotLogoBlue.png",
+            "botAvatarInitials": "B",
+            "bubbleAttachmentMaxWidth": 480,
+            "bubbleAttachmentMinWidth": 250,
+            "bubbleBackground": "#f0eded",
+            "bubbleBorderColor": "#f5f5f5",
+            "bubbleBorderRadius": 18,
+            "bubbleBorderStyle": "solid",
+            "bubbleBorderWidth": 1,
+            "bubbleFromUserBackground": "#ebefff",
+            "bubbleFromUserBorderColor": "#f5f5f5",
+            "bubbleFromUserBorderRadius": 18,
+            "bubbleFromUserBorderStyle": "solid",
+            "bubbleFromUserBorderWidth": 1,
+            "bubbleFromUserNubOffset": 0,
+            "bubbleFromUserNubSize": 0,
+            "bubbleFromUserTextColor": "#242424",
+            "bubbleImageHeight": 10,
+            "bubbleImageMaxHeight": 240,
+            "bubbleImageMinHeight": 240,
+            "bubbleMessageMaxWidth": 480,
+            "bubbleMessageMinWidth": 120,
+            "bubbleMinHeight": 50,
+            "bubbleNubOffset": 0,
+            "bubbleTextColor": "#242424",
+            "emojiSet": true,
+            "fontSizeSmall": "70%",
+            "hideUploadButton": true,
+            "messageActivityWordBreak": "break-word",
+            "monospaceFont": "Consolas",
+            "paddingRegular": 10,
+            "paddingWide": 10,
+            "primaryFont": null,
+            "sendBoxBackground": "#e8e9eb",
+            "sendBoxBorderTop": "solid 1px #808080",
+            "sendBoxButtonColor": "#0078d4",
+            "sendBoxButtonColorOnHover": "#006cbe",
+            "sendBoxButtonShadeBorderRadius": 10,
+            "sendBoxTextWrap": true,
+            "sendBoxPlaceholderColor": "#171616",
+            "sendBoxTextColor": "#2e2d2d",
+            "showAvatarInGroup": "status",
+            "spinnerAnimationHeight": 16,
+            "spinnerAnimationPadding": 12,
+            "spinnerAnimationWidth": 16,
+            "subtleColor": "#000000FF",
+            "suggestedActionBackgroundColor": "#006FC4FF",
+            "suggestedActionBackgroundColorOnHover": "#0078D4",
+            "suggestedActionBorderColor": "",
+            "suggestedActionBorderRadius": 25,
+            "suggestedActionBorderWidth": 1,
+            "suggestedActionLayout": "flow",
+            "suggestedActionTextColor": "#FFFFFFFF",
+            "userAvatarBackgroundColor": "#5AA9F4",
+            "avatarBorderRadius": "50%",
+            "avatarSize": 30,
+            "userAvatarImage": "Avatar_user.svg",
+            "userAvatarInitials": ""
+        };
 
+        function createGradient(baseColor) {
+            const r = parseInt(baseColor.slice(1, 3), 16);
+            const g = parseInt(baseColor.slice(3, 5), 16);
+            const b = parseInt(baseColor.slice(5, 7), 16);
+            const lighterColor = `#${Math.min(255, r + 30).toString(16).padStart(2, '0')}${Math.min(255, g + 30).toString(16).padStart(2, '0')}${Math.min(255, b + 30).toString(16).padStart(2, '0')}`;
+            const darkerColor = `#${Math.max(0, r - 30).toString(16).padStart(2, '0')}${Math.max(0, g - 30).toString(16).padStart(2, '0')}${Math.max(0, b - 30).toString(16).padStart(2, '0')}`;
+            return `linear-gradient(135deg, ${lighterColor}, ${baseColor}, ${darkerColor})`;
+        }
 
+        // Configurar cores no DOM
+        document.addEventListener('DOMContentLoaded', () => {
+            const root = document.documentElement;
+            root.style.setProperty('--primary-color', createGradient(styleOptions.accent));
+            root.style.setProperty('--header-textColor', styleOptions.suggestedActionTextColor);
+        });
+
+        const environmentEndPoint = tokenEndpoint.slice(0, tokenEndpoint.indexOf("/powervirtualagents"));
+        const apiVersion = tokenEndpoint.slice(tokenEndpoint.indexOf("api-version")).split("=")[1];
+        const regionalChannelSettingsURL = `${environmentEndPoint}/powervirtualagents/regionalchannelsettings?api-version=${apiVersion}`;
+
+        function createCustomStore() {
+            return window.WebChat.createStore(
+                {},
+                ({ dispatch }) => next => action => {
+                    if (action.type === "DIRECT_LINE/CONNECT_FULFILLED") {
+                        dispatch({
+                            type: "DIRECT_LINE/POST_ACTIVITY",
+                            meta: { method: "keyboard" },
+                            payload: {
+                                activity: {
+                                    channelData: { postBack: true },
+                                    name: "startConversation",
+                                    type: "event",
+                                },
+                            },
+                        });
+                    }
+
+                    if (action.type === "DIRECT_LINE/POST_ACTIVITY") {
+                        setTimeout(() => {
+                            const transcript = document.querySelector(".webchat__basic-transcript");
+                            if (transcript && !document.getElementById("typingLoader")) {
+                                const loader = document.createElement("div");
+                                loader.id = "typingLoader";
+                                loader.className = "webchat__typing-indicator";
+                                loader.innerHTML = "<span></span><span></span><span></span>";
+                                transcript.appendChild(loader);
+                            }
+                        }, 200);
+                    }
+
+                    if (action.type === "DIRECT_LINE/INCOMING_ACTIVITY") {
+                        if (action.payload.activity.from.role === "bot") {
+                            const loader = document.getElementById("typingLoader");
+                            if (loader) loader.remove();
+                        }
+                    }
+
+                    return next(action);
+                }
+            );
+        }
+
+        const activityMiddleware = () => next => card => {
+            if (card.activity.type === "typing") {
+                return () => {
+                    const typing = document.createElement("div");
+                    typing.className = "webchat__typing-indicator";
+                    typing.innerHTML = "<span></span><span></span><span></span>";
+                    return typing;
+                };
+            }
+            return next(card);
+        };
+
+        // Função para reiniciar a conversa
+        async function restartConversation() {
+            console.log("Reiniciando chat...");
+            try {
+                const response = await fetch(tokenEndpoint);
+                const conversationInfo = await response.json();
+
+                if (!conversationInfo.token) {
+                    throw new Error("Token não retornado");
+                }
+
+                const directLine = window.WebChat.createDirectLine({
+                    token: conversationInfo.token
+                });
+
+                const webchatElement = document.getElementById("webchat");
+                
+                // Limpa completamente o chat
+                webchatElement.innerHTML = "";
+                
+                // Cria um novo container para o chat
+                const newWebchatDiv = document.createElement("div");
+                newWebchatDiv.id = "webchat";
+                newWebchatDiv.setAttribute("role", "main");
+                webchatElement.parentNode.replaceChild(newWebchatDiv, webchatElement);
+                
+                // Renderiza novamente
+                window.WebChat.renderWebChat(
+                    {
+                        directLine: directLine,
+                        styleOptions: styleOptions,
+                        store: createCustomStore(),
+                        activityMiddleware: activityMiddleware
+                    },
+                    newWebchatDiv
+                );
+                
+                console.log("Chat reiniciado com sucesso!");
+            } catch (err) {
+                console.error("Erro ao reiniciar:", err);
+            }
+        }
+
+        // Inicializar o chat
+        async function initializeChat() {
+            try {
+                const response = await fetch(regionalChannelSettingsURL);
+                const data = await response.json();
+                const directLineUrl = data.channelUrlsById.directline;
+
+                if (!directLineUrl) {
+                    throw new Error("Failed to get DirectLine URL");
+                }
+
+                const conversationResponse = await fetch(tokenEndpoint);
+                const conversationInfo = await conversationResponse.json();
+
+                if (!conversationInfo.token) {
+                    throw new Error("Failed to get conversation token");
+                }
+
+                const directLine = window.WebChat.createDirectLine({
+                    domain: `${directLineUrl}v3/directline`,
+                    token: conversationInfo.token,
+                });
+
+                window.WebChat.renderWebChat(
+                    {
+                        directLine,
+                        styleOptions: styleOptions,
+                        store: createCustomStore(),
+                        activityMiddleware: activityMiddleware
+                    },
+                    document.getElementById("webchat")
+                );
+            } catch (err) {
+                console.error("Failed to initialize chat:", err);
+            }
+        }
+
+        // Aguardar o DOM carregar completamente
+        document.addEventListener("DOMContentLoaded", function() {
+            initializeChat();
+            
+            // Adicionar evento ao botão de reiniciar
+            const restartButton = document.getElementById("restart-button");
+            if (restartButton) {
+                restartButton.addEventListener("click", function(e) {
+                    e.preventDefault();
+                    restartConversation();
+                });
+            }
+        });
+    </script>
 </body>
+
 </html>
