@@ -51,7 +51,7 @@
             bottom: 80px;
             right: 20px;
             width: min(400px, 90vw);
-            height: min(500px, 80vh);
+            height: min(700px, 80vh);
             border: 2px solid #ccc;
             border-radius: 10px;
             overflow: hidden;
